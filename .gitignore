@@ -1,0 +1,8 @@
+.kiro
+.idea
+bin
+obj
+appsettings.Development.json
+
+_LibraryInit/*
+_Transcoded/*
