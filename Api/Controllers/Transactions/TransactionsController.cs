@@ -1,6 +1,5 @@
 using Financer.Application.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Financer.Api.Controllers.Transactions;

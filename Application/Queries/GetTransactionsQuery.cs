@@ -1,3 +1,4 @@
+using AutoMapper;
 using Financer.Application.Dto;
 using Financer.Domain.Repositories;
 using MediatR;
@@ -10,17 +11,20 @@ public record GetTransactionsQuery(
     string Description,
     Guid AccountId,
     Guid CategoryId
-) : IRequest<TransactionRes>;
+) : IRequest<IList<TransactionRes>>;
 
-public class GetTransactionsQueryHandler(ITransactionRepository transactionRepository)
-    : IRequestHandler<GetTransactionsQuery, TransactionRes>
+public class GetTransactionsQueryHandler(
+    ITransactionRepository transactionRepository,
+    IMapper mapper
+) : IRequestHandler<GetTransactionsQuery, IList<TransactionRes>>
 {
-    public async Task<TransactionRes> Handle(
+    public async Task<IList<TransactionRes>> Handle(
         GetTransactionsQuery request,
         CancellationToken cancellationToken
     )
     {
         var transactions = await transactionRepository.GetAllAsync();
-        return new TransactionRes(Guid.NewGuid());
+        var outList = transactions.Select(mapper.Map<TransactionRes>).ToList();
+        return outList;
     }
 }
