@@ -1,3 +1,4 @@
+using Financer.Application.Commands;
 using Financer.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,14 @@ public class TransactionsController(ISender mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetTransactions()
     {
-        var query = new GetTransactionsQuery(DateTime.Now, 0L, "", Guid.Empty, Guid.Empty);
-        var data = await mediator.Send(query);
+        var data = await mediator.Send(new GetTransactionsQuery());
         return Ok(data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTransaction([FromBody] CreateTransactionCommand command)
+    {
+        await mediator.Send(command);
+        return Ok();
     }
 }

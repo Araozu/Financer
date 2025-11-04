@@ -5,13 +5,7 @@ using MediatR;
 
 namespace Financer.Application.Queries;
 
-public record GetTransactionsQuery(
-    DateTime Date,
-    decimal Amount,
-    string Description,
-    Guid AccountId,
-    Guid CategoryId
-) : IRequest<IList<TransactionRes>>;
+public record GetTransactionsQuery : IRequest<IList<TransactionRes>>;
 
 public class GetTransactionsQueryHandler(
     ITransactionRepository transactionRepository,
