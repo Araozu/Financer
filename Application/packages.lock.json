@@ -2,6 +2,32 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
+      "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+        "type": "Direct",
+        "requested": "[12.0.1, )",
+        "resolved": "12.0.1",
+        "contentHash": "+g/K+Vpe3gGMKGzjslMOdqNlkikScDjWfVvmWTayrDHaG/n2pPmFBMa+jKX1r/h6BDGFdkyRjAuhFE3ykW+r1g==",
+        "dependencies": {
+          "AutoMapper": "[12.0.1]",
+          "Microsoft.Extensions.Options": "6.0.0"
+        }
+      },
+      "FluentValidation": {
+        "type": "Direct",
+        "requested": "[12.1.0, )",
+        "resolved": "12.1.0",
+        "contentHash": "FqWEn8BdbbFEHGanj9K8SVo+LyBeFWy2rolaE+e1TNUbifr8M7Iss+I1AqTSc8kjKtvjl/WN4XIHiRpslh42bA=="
+      },
+      "FluentValidation.DependencyInjectionExtensions": {
+        "type": "Direct",
+        "requested": "[12.1.0, )",
+        "resolved": "12.1.0",
+        "contentHash": "p9ZnpVCUvkelSfqFYZP9aMtnuRlDRkrAAPqjQGG+1mVVn8zxE0bc1/RAFRBZKsPglbMBQOx8wXOZhg2fGstacQ==",
+        "dependencies": {
+          "FluentValidation": "12.1.0",
+          "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
+        }
+      },
       "MediatR": {
         "type": "Direct",
         "requested": "[13.1.0, )",
@@ -59,10 +85,23 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0-rc.2.25502.107"
         }
       },
+      "AutoMapper": {
+        "type": "Transitive",
+        "resolved": "12.0.1",
+        "contentHash": "hvV62vl6Hp/WfQ24yzo3Co9+OPl8wH8hApwVtgWpiAynVJkUcs7xvehnSftawL8Pe8FrPffBRM3hwzLQqWDNjA==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
+      },
       "MediatR.Contracts": {
         "type": "Transitive",
         "resolved": "2.0.1",
         "contentHash": "FYv95bNT4UwcNA+G/J1oX5OpRiSUxteXaUt2BJbRSdRNiIUNbggJF69wy6mnk2wYToaanpdXZdCwVylt96MpwQ=="
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

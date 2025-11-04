@@ -1,4 +1,6 @@
+using Financer.Domain.Repositories;
 using Financer.Infrastructure.Data;
+using Financer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,9 @@ public static class ServiceCollectionExtensions
 
         // Register options
         // Register repositories
+        // Register repository implementations
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+
         // Register services
 
         return services;
