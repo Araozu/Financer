@@ -5,20 +5,20 @@ using MediatR;
 
 namespace Financer.Application.Queries;
 
-public record GetTransactionsQuery : IRequest<IList<TransactionRes>>;
+public record GetTransactionsQuery : IRequest<IList<TransactionResDto>>;
 
 public class GetTransactionsQueryHandler(
     ITransactionRepository transactionRepository,
     IMapper mapper
-) : IRequestHandler<GetTransactionsQuery, IList<TransactionRes>>
+) : IRequestHandler<GetTransactionsQuery, IList<TransactionResDto>>
 {
-    public async Task<IList<TransactionRes>> Handle(
+    public async Task<IList<TransactionResDto>> Handle(
         GetTransactionsQuery request,
         CancellationToken cancellationToken
     )
     {
         var transactions = await transactionRepository.GetAllAsync();
-        var outList = transactions.Select(mapper.Map<TransactionRes>).ToList();
+        var outList = transactions.Select(mapper.Map<TransactionResDto>).ToList();
         return outList;
     }
 }

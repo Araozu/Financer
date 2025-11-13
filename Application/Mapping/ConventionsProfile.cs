@@ -8,6 +8,6 @@ public class ConventionsProfile : Profile
 {
     public ConventionsProfile()
     {
-        CreateMap<Transaction, TransactionRes>();
+        CreateMap<Transaction, TransactionResDto>();
     }
 }
