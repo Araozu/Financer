@@ -27,6 +27,11 @@ public class AuthController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         // Find user by email
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
