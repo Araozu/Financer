@@ -1,4 +1,6 @@
 using Financer.Domain.Repositories;
+using Financer.Infrastructure.Authentication;
+using Financer.Infrastructure.Configuration;
 using Financer.Infrastructure.Data;
 using Financer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +28,14 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(connectionString);
         });
 
-        // Register options
-        // Register repositories
-        // Register repository implementations
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
-
+        // Configure JWT settings
+        services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+        
         // Register services
+        services.AddScoped<ITokenService, TokenService>();
+
+        // Register repositories
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         return services;
     }

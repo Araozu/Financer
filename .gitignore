@@ -3,6 +3,7 @@
 bin
 obj
 appsettings.Development.json
+appsettings.json
 
 _LibraryInit/*
 _Transcoded/*
