@@ -1,0 +1,50 @@
+// traefik dynamic configuration
+service_name = "hotswap_001"
+
+sablier {
+    enable = true
+    group  = "hotswap"
+}
+traefik {
+    enable = true
+    docker {
+        allownonrunning = true
+    }
+    http {
+        middlewares {
+            [service_name] {
+                plugin {
+                    sablier {
+                        group = "hotswap"
+                        sablierUrl = "http://sablier:10000"
+                        sessionDuration = "1m"
+                    }
+                }
+            }
+        }
+        routers {
+            [service_name] {
+                rule = "Host(`hotswap.example.com`)"
+                middlewares = service_name
+                entrypoints = "websecure"
+                tls {
+                    enable = true
+                    certresolver = "example-wildcard"
+                    domains {
+                        main = "example.com"
+                        sans = "*.example.com"
+                    }
+                }
+            }
+        }
+        services {
+            [service_name] {
+                loadbalancer {
+                    server {
+                        port = 80
+                    }
+                }
+            }
+        }
+    }
+}
