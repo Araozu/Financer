@@ -13,40 +13,41 @@ project_reference = "\(project_name)-\(project_stage)-\(project_service)"
 project_database  = "\(project_name)-\(project_stage)-postgres"
 project_network   = "\(project_name)-\(project_stage)-network"
 
-
-services {
-    [project_reference] {
-        image = "test"
-        container_name = project_reference
-        restart = "unless-stopped"
-        depends_on {
-            project_database
-        }
-        environment {
-            TZ = "America/Lima"
-        }
-        env_file {
-            ".env.backend"
-            ".env.database"
-        }
-        networks {
-            "traefik3_proxy"
-            project_network
-        }
-        labels {
-            for (key, value in flatten2("traefik", project_traefik)) {
-                "\(key)=\(value)"
+compose {
+    services {
+        [project_reference] {
+            image = "test"
+            container_name = project_reference
+            restart = "unless-stopped"
+            depends_on {
+                project_database
             }
-        }
-        healthcheck {
-            test {
-                "CMD-SHELL"
-                "curl -f http://localhost:6000/api/health || exit 1"
+            environment {
+                TZ = "America/Lima"
             }
-            interval = "10s"
-            timeout  = "5s"
-            retries  = 5
-            start_period = "30s"
+            env_file {
+                ".env.backend"
+                ".env.database"
+            }
+            networks {
+                "traefik3_proxy"
+                project_network
+            }
+            labels {
+                for (key, value in flatten2("traefik", project_traefik)) {
+                    "\(key)=\(value)"
+                }
+            }
+            healthcheck {
+                test {
+                    "CMD-SHELL"
+                    "curl -f http://localhost:6000/api/health || exit 1"
+                }
+                interval = "10s"
+                timeout  = "5s"
+                retries  = 5
+                start_period = "30s"
+            }
         }
     }
 }
@@ -96,7 +97,5 @@ project_traefik {
 }
 
 output {
-    value = new Dynamic {
-        ["services"] = services
-    }
+    value = compose
 }
