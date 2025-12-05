@@ -8,6 +8,8 @@ public class Transaction
     public string Description { get; private set; } = string.Empty;
     public Guid? AccountId { get; private set; }
     public Guid? CategoryId { get; private set; }
+    public Guid CurrencyId { get; private set; }
+    public Currency? Currency { get; private set; }
 
     // For event sourcing
     private readonly List<IDomainEvent> _domainEvents = [];
@@ -29,6 +31,7 @@ public class Transaction
         DateTime date,
         decimal amount,
         string description,
+        Guid currencyId,
         Guid? accountId = null,
         Guid? categoryId = null
     )
@@ -36,6 +39,7 @@ public class Transaction
         Date = date;
         Amount = amount;
         Description = description ?? throw new ArgumentNullException(nameof(description));
+        CurrencyId = currencyId;
         AccountId = accountId;
         CategoryId = categoryId;
     }
