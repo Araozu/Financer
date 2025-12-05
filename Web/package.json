@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
+		"generate": "openapi-typescript http://localhost:5678/openapi/v1.json -o ./src/api/api.d.ts",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint ."
@@ -38,6 +39,10 @@
 		"vite": "^7.1.10"
 	},
 	"dependencies": {
-		"mode-watcher": "^1.1.0"
+		"mode-watcher": "^1.1.0",
+		"@tanstack/svelte-query": "^5.90.2",
+		"@tanstack/svelte-query-devtools": "^5.90.2",
+		"openapi-fetch": "^0.14.1",
+		"openapi-typescript": "^7.10.1"
 	}
 }
