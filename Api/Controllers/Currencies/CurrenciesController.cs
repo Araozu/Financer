@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Financer.Application.Commands;
 using Financer.Application.Queries;
+using Financer.Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,10 +21,11 @@ public class CurrenciesController(ISender mediator) : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetCurrency(Guid id)
     {
-        var data = await mediator.Send(new GetCurrencyByIdQuery(id));
-        if (data == null)
-            return NotFound();
-        return Ok(data);
+        var result = await mediator.Send(new GetCurrencyByIdQuery(id));
+        return result.Match<IActionResult>(
+            currency => Ok(currency),
+            notFound => NotFound(new ProblemDetails { Detail = notFound.Reason })
+        );
     }
 
     [HttpPost]
@@ -41,23 +43,22 @@ public class CurrenciesController(ISender mediator) : ControllerBase
     )
     {
         var command = new UpdateCurrencyCommand(id, request.Code, request.Name, request.Symbol);
-        var success = await mediator.Send(command);
-        if (!success)
-            return NotFound();
-        return NoContent();
+        var result = await mediator.Send(command);
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            notFound => NotFound(new ProblemDetails { Detail = notFound.Reason })
+        );
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteCurrency(Guid id)
     {
         var result = await mediator.Send(new DeleteCurrencyCommand(id));
-        if (!result.Success)
-        {
-            if (result.ErrorMessage?.Contains("in use") == true)
-                return Conflict(new { error = result.ErrorMessage });
-            return NotFound(new { error = result.ErrorMessage });
-        }
-        return NoContent();
+        return result.Match<IActionResult>(
+            _ => NoContent(),
+            notFound => NotFound(new ProblemDetails { Detail = notFound.Reason }),
+            badRequest => Conflict(new ProblemDetails { Detail = badRequest.Reason })
+        );
     }
 }
 

@@ -1,25 +1,27 @@
 using Financer.Domain.Repositories;
+using Financer.Domain.Utils;
 using MediatR;
+using OneOf;
 
 namespace Financer.Application.Commands;
 
 public record UpdateCurrencyCommand(Guid Id, string Code, string Name, string Symbol)
-    : IRequest<bool>;
+    : IRequest<OneOf<Success, NotFound>>;
 
 public class UpdateCurrencyCommandHandler(ICurrencyRepository currencyRepository)
-    : IRequestHandler<UpdateCurrencyCommand, bool>
+    : IRequestHandler<UpdateCurrencyCommand, OneOf<Success, NotFound>>
 {
-    public async Task<bool> Handle(
+    public async Task<OneOf<Success, NotFound>> Handle(
         UpdateCurrencyCommand request,
         CancellationToken cancellationToken
     )
     {
         var currency = await currencyRepository.GetByIdAsync(request.Id);
         if (currency == null)
-            return false;
+            return new NotFound("Currency not found.");
 
         currency.Update(request.Code, request.Name, request.Symbol);
         await currencyRepository.UpdateAsync(currency);
-        return true;
+        return new Success();
     }
 }
