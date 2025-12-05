@@ -55,17 +55,13 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddDays(7)
+            Expires = DateTimeOffset.UtcNow.AddDays(7),
         };
 
         Response.Cookies.Append("access_token", accessToken, cookieOptions);
         Response.Cookies.Append("refresh_token", refreshToken, cookieOptions);
 
         // Also return tokens in JSON response
-        return Ok(new LoginResponse
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        });
+        return Ok(new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken });
     }
 }

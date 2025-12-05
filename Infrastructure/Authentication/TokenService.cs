@@ -14,7 +14,8 @@ public class TokenService : ITokenService
 {
     private readonly JwtSettings _jwtSettings;
     private readonly UserManager<User> _userManager;
-    private readonly Dictionary<string, (string UserId, DateTime Expiration)> _refreshTokenStore = new();
+    private readonly Dictionary<string, (string UserId, DateTime Expiration)> _refreshTokenStore =
+        new();
 
     public TokenService(IOptions<JwtSettings> jwtSettings, UserManager<User> userManager)
     {
@@ -26,11 +27,11 @@ public class TokenService : ITokenService
     {
         var accessToken = await GenerateAccessTokenAsync(user);
         var refreshToken = GenerateRefreshToken();
-        
+
         // Store refresh token with user ID and expiration
         var expiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
         _refreshTokenStore[refreshToken] = (user.Id, expiration);
-        
+
         return (accessToken, refreshToken);
     }
 
@@ -51,20 +52,20 @@ public class TokenService : ITokenService
     private async Task<string> GenerateAccessTokenAsync(User user)
     {
         var roles = await _userManager.GetRolesAsync(user);
-        
+
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
-        
+
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
+
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
@@ -72,7 +73,7 @@ public class TokenService : ITokenService
             expires: DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
             signingCredentials: credentials
         );
-        
+
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 

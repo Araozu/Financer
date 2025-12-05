@@ -9,5 +9,6 @@ public class ConventionsProfile : Profile
     public ConventionsProfile()
     {
         CreateMap<Transaction, TransactionResDto>();
+        CreateMap<Currency, CurrencyResDto>();
     }
 }

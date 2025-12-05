@@ -30,12 +30,13 @@ public static class ServiceCollectionExtensions
 
         // Configure JWT settings
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-        
+
         // Register services
         services.AddScoped<ITokenService, TokenService>();
 
         // Register repositories
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 
         return services;
     }
