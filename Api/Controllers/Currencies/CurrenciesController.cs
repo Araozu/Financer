@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Financer.Application.Commands;
 using Financer.Application.Queries;
 using MediatR;
@@ -26,8 +27,9 @@ public class CurrenciesController(ISender mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCurrency([FromBody] CreateCurrencyCommand command)
+    public async Task<IActionResult> CreateCurrency([FromBody] CreateCurrencyRequest request)
     {
+        var command = new CreateCurrencyCommand(request.Code, request.Name, request.Symbol);
         var id = await mediator.Send(command);
         return CreatedAtAction(nameof(GetCurrency), new { id }, new { id });
     }
@@ -48,9 +50,25 @@ public class CurrenciesController(ISender mediator) : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteCurrency(Guid id)
     {
-        await mediator.Send(new DeleteCurrencyCommand(id));
+        var result = await mediator.Send(new DeleteCurrencyCommand(id));
+        if (!result.Success)
+        {
+            if (result.ErrorMessage?.Contains("in use") == true)
+                return Conflict(new { error = result.ErrorMessage });
+            return NotFound(new { error = result.ErrorMessage });
+        }
         return NoContent();
     }
 }
 
-public record UpdateCurrencyRequest(string Code, string Name, string Symbol);
+public record CreateCurrencyRequest(
+    [Required] [StringLength(10, MinimumLength = 1)] string Code,
+    [Required] [StringLength(100, MinimumLength = 1)] string Name,
+    [Required] [StringLength(10, MinimumLength = 1)] string Symbol
+);
+
+public record UpdateCurrencyRequest(
+    [Required] [StringLength(10, MinimumLength = 1)] string Code,
+    [Required] [StringLength(100, MinimumLength = 1)] string Name,
+    [Required] [StringLength(10, MinimumLength = 1)] string Symbol
+);

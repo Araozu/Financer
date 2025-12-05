@@ -9,5 +9,6 @@ public interface ICurrencyRepository
     Task<IEnumerable<Currency>> GetAllAsync();
     Task AddAsync(Currency currency);
     Task UpdateAsync(Currency currency);
-    Task DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(Guid id);
+    Task<bool> IsInUseAsync(Guid id);
 }

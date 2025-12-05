@@ -15,14 +15,15 @@ public class CurrencyRepository(AppDbContext db) : ICurrencyRepository
         await db.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var entity = await db.Currencies.FindAsync(id);
         if (entity == null)
-            return;
+            return false;
 
         db.Currencies.Remove(entity);
         await db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<IEnumerable<Currency>> GetAllAsync()
@@ -44,7 +45,16 @@ public class CurrencyRepository(AppDbContext db) : ICurrencyRepository
     {
         ArgumentNullException.ThrowIfNull(currency);
 
+        var exists = await db.Currencies.AnyAsync(c => c.Id == currency.Id);
+        if (!exists)
+            throw new InvalidOperationException($"Currency with ID {currency.Id} does not exist.");
+
         db.Currencies.Update(currency);
         await db.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsInUseAsync(Guid id)
+    {
+        return await db.Transactions.AnyAsync(t => t.CurrencyId == id);
     }
 }
