@@ -37,6 +37,7 @@
 
               # DevOps & Infrastructure
               ansible
+              pkl
             ];
           };
         });

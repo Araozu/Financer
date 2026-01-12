@@ -7,8 +7,8 @@ namespace Financer.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User>(options)
 {
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<Currency> Currencies { get; set; }
+    public DbSet<Transaction> Transactions { get; set; } = null!;
+    public DbSet<Currency> Currencies { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

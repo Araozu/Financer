@@ -1,0 +1,74 @@
+function flatten2(acc: String, input: Dynamic): Map =
+    input.toMap().flatMap((key, value) ->
+        if (value is Dynamic)
+            flatten2("\(acc)\(key).", value)
+        else Map("\(acc)\(key)", value)
+    )
+
+project_name    = "financer"
+project_stage   = "develop"
+project_service = "full"
+
+project_reference = "\(project_name)-\(project_stage)-\(project_service)"
+project_database  = "\(project_name)-\(project_stage)-db"
+project_network   = "\(project_name)-\(project_stage)-network"
+
+project_registry_ref = "\(project_name.toUpperCase())_\(project_service.toUpperCase())_REGISTRY_URL"
+project_registry_version = "\(project_name.toUpperCase())_\(project_service.toUpperCase())_VERSION"
+
+compose {
+    services {
+        [project_reference] {
+            image = "$\(project_registry_ref):$\(project_registry_version)"
+            container_name = project_reference
+            restart = "unless-stopped"
+            depends_on {
+                [project_database] {
+                    condition = "service_healthy"
+                }
+            }
+            environment {
+                TZ = "America/Lima"
+            }
+            env_file {
+                ".env.full"
+                ".env.database"
+            }
+            networks {
+                "proxy"
+                project_network
+            }
+            labels {
+                for (key, value in flatten2("traefik.", project_traefik)) {
+                    "\(key)=\(value)"
+                }
+                "traefik.http.routers.\(project_reference).tls=true"
+            }
+        }
+    }
+}
+
+project_traefik {
+    enable = true
+    docker {
+        network = "proxy"
+    }
+    http {
+        ["routers.\(project_reference)"] {
+            rule = "Host(`\(project_reference).araoz.dev`)"
+            entrypoints = "websecure"
+            tls {
+                certresolver = "araoz-wildcard"
+                `domains[0]` {
+                    main = "araoz.dev"
+                    sans = "*.araoz.dev"
+                }
+            }
+        }
+        ["services.\(project_reference).loadbalancer.server.port"] = 4000
+    }
+}
+
+output {
+    value = compose
+}
