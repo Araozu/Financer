@@ -1,50 +1,74 @@
-// traefik dynamic configuration
-service_name = "hotswap_001"
+function flatten2(acc: String, input: Dynamic): Map =
+    input.toMap().flatMap((key, value) ->
+        if (value is Dynamic)
+            flatten2("\(acc)\(key).", value)
+        else Map("\(acc)\(key)", value)
+    )
 
-sablier {
-    enable = true
-    group  = "hotswap"
+project_name    = "financer"
+project_stage   = "develop"
+project_service = "full"
+
+project_reference = "\(project_name)-\(project_stage)-\(project_service)"
+project_database  = "\(project_name)-\(project_stage)-db"
+project_network   = "\(project_name)-\(project_stage)-network"
+
+project_registry_ref = "\(project_name.toUpperCase())_\(project_service.toUpperCase())_REGISTRY_URL"
+project_registry_version = "\(project_name.toUpperCase())_\(project_service.toUpperCase())_VERSION"
+
+compose {
+    services {
+        [project_reference] {
+            image = "$\(project_registry_ref):$\(project_registry_version)"
+            container_name = project_reference
+            restart = "unless-stopped"
+            depends_on {
+                [project_database] {
+                    condition = "service_healthy"
+                }
+            }
+            environment {
+                TZ = "America/Lima"
+            }
+            env_file {
+                ".env.full"
+                ".env.database"
+            }
+            networks {
+                "proxy"
+                project_network
+            }
+            labels {
+                for (key, value in flatten2("traefik.", project_traefik)) {
+                    "\(key)=\(value)"
+                }
+                "traefik.http.routers.\(project_reference).tls=true"
+            }
+        }
+    }
 }
-traefik {
+
+project_traefik {
     enable = true
     docker {
-        allownonrunning = true
+        network = "proxy"
     }
     http {
-        middlewares {
-            [service_name] {
-                plugin {
-                    sablier {
-                        group = "hotswap"
-                        sablierUrl = "http://sablier:10000"
-                        sessionDuration = "1m"
-                    }
+        ["routers.\(project_reference)"] {
+            rule = "Host(`\(project_reference).araoz.dev`)"
+            entrypoints = "websecure"
+            tls {
+                certresolver = "araoz-wildcard"
+                `domains[0]` {
+                    main = "araoz.dev"
+                    sans = "*.araoz.dev"
                 }
             }
         }
-        routers {
-            [service_name] {
-                rule = "Host(`hotswap.example.com`)"
-                middlewares = service_name
-                entrypoints = "websecure"
-                tls {
-                    enable = true
-                    certresolver = "example-wildcard"
-                    domains {
-                        main = "example.com"
-                        sans = "*.example.com"
-                    }
-                }
-            }
-        }
-        services {
-            [service_name] {
-                loadbalancer {
-                    server {
-                        port = 80
-                    }
-                }
-            }
-        }
+        ["services.\(project_reference).loadbalancer.server.port"] = 4000
     }
+}
+
+output {
+    value = compose
 }

@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
 
         // Configure JWT settings
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-        
+
         // Register services
         services.AddScoped<ITokenService, TokenService>();
 

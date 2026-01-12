@@ -1,0 +1,26 @@
+services:
+  financer-develop-full:
+    image: $FINANCER_FULL_REGISTRY_URL:$FINANCER_FULL_VERSION
+    container_name: financer-develop-full
+    restart: unless-stopped
+    depends_on:
+      financer-develop-db:
+        condition: service_healthy
+    environment:
+      TZ: America/Lima
+    env_file:
+    - .env.full
+    - .env.database
+    networks:
+    - proxy
+    - financer-develop-network
+    labels:
+    - traefik.enable=true
+    - traefik.docker.network=proxy
+    - traefik.http.routers.financer-develop-full.rule=Host(`financer-develop-full.araoz.dev`)
+    - traefik.http.routers.financer-develop-full.entrypoints=websecure
+    - traefik.http.routers.financer-develop-full.tls.certresolver=araoz-wildcard
+    - traefik.http.routers.financer-develop-full.tls.domains[0].main=araoz.dev
+    - traefik.http.routers.financer-develop-full.tls.domains[0].sans=*.araoz.dev
+    - traefik.http.services.financer-develop-full.loadbalancer.server.port=4000
+    - traefik.http.routers.financer-develop-full.tls=true
