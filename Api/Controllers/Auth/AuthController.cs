@@ -29,27 +29,23 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new ProblemDetails { Detail = "Invalid request data." });
         }
 
-        // Find user by email
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(new ProblemDetails { Detail = "Invalid email or password." });
         }
 
-        // Check password
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
         {
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(new ProblemDetails { Detail = "Invalid email or password." });
         }
 
-        // Generate tokens
         var (accessToken, refreshToken) = await _tokenService.GenerateTokensAsync(user);
 
-        // Set tokens in cookies
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,

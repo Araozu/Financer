@@ -10,5 +10,11 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
     {
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id).ValueGeneratedOnAdd();
+        builder.Property(a => a.CurrencyId).IsRequired();
+        builder
+            .HasOne(t => t.Currency)
+            .WithMany()
+            .HasForeignKey(t => t.CurrencyId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

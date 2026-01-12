@@ -8,6 +8,7 @@ public record CreateTransactionCommand(
     DateTime Date,
     decimal Amount,
     string Description,
+    Guid CurrencyId,
     Guid AccountId,
     Guid CategoryId
 ) : IRequest;
@@ -21,6 +22,7 @@ public class CreateTransactionCommandHandler(ITransactionRepository transactionR
             date: request.Date,
             amount: request.Amount,
             description: request.Description,
+            currencyId: request.CurrencyId,
             accountId: request.AccountId,
             categoryId: request.CategoryId
         );

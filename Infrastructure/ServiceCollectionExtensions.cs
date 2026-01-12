@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
 
         // Register repositories
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 
         return services;
     }
