@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        BUILD_REF = sh(script: "echo -n '${BUILD_TAG}' | sha256sum | cut -c1-12", returnStdout: true).trim()
+        // Use git commit hash if available, otherwise fallback to build tag hash
+        BUILD_REF = sh(script: "git rev-parse --short HEAD || echo -n '${BUILD_TAG}' | sha256sum | cut -c1-12", returnStdout: true).trim()
 
         PROJECT_NAME    = "financer"
         PROJECT_SERVICE = "full"
@@ -43,14 +44,13 @@ ungrouped:
                         stage("Build svelte assets") {
                             agent {
                                 docker {
-                                    image "node:22"
+                                    image "node:22-alpine"
                                     reuseNode true
                                     args '-u 0:0'
                                 }
                             }
                             environment {
-                                VITE_PUBLIC_BACKEND_URL = "https://reezer.araoz.dev"
-                                VITE_PUBLIC_WS_URL = "wss://reezer.araoz.dev"
+                                VITE_PUBLIC_BACKEND_URL = "https://financer.araoz.dev"
                             }
                             steps {
                                 dir("Web") {
@@ -78,7 +78,7 @@ ungrouped:
                                         credentialsId: SSH_CRED,
                                         inventory: "inventory.yml",
                                         playbook: "../ansible/service_pull_and_setup.yml",
-                                        vaultCredentialsId: "ansible-vault-reezer-key",
+                                        vaultCredentialsId: "ansible-vault-financer-key",
                                         extras: "--extra-vars '@vault.yml'",
                                         extraVars: [
                                             _remote_folder: REMOTE_FOLDER,

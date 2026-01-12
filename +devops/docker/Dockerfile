@@ -27,7 +27,7 @@ RUN dotnet publish Api -c Release -r linux-musl-x64 \
 
 
 # Create EF migrations bundle (self-contained)
-ENV ConnectionStrings__DefaultConnection=Host=localhost;Database=financer;Username=root;Password=root
+ENV ConnectionStrings__DefaultConnection=Host=localhost;Database=financer;Username=postgres;Password=postgres
 RUN dotnet ef migrations bundle --project Api \
     -r linux-musl-x64 \
     --configuration Release \

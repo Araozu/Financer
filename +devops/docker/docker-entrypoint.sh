@@ -43,13 +43,13 @@ run_migrations() {
 start_application() {
     log_info "Starting application..."
 
-    if [ ! -x "./Reezer.Api" ]; then
+    if [ ! -x "./Financer.Api" ]; then
         log_error "Application executable not found!"
         exit 1
     fi
 
     # Execute the application
-    exec ./Reezer.Api
+    exec ./Financer.Api
 }
 
 # Graceful shutdown handler

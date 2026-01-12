@@ -14,7 +14,7 @@
       #
       db_host_name: '{{ project_name }}-db-{{ project_stage }}'
       db_name: '{{ project_name }}-db-{{ project_stage }}'
-      db_username: 'reezer_user_{{ project_stage }}'
+      db_username: 'financer_user_{{ project_stage }}'
 
   tasks:
     - name: Ensure target directory exists
