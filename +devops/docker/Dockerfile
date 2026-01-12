@@ -25,11 +25,9 @@ COPY Infrastructure/ ./Infrastructure
 RUN dotnet publish Api -c Release -r linux-musl-x64 \
     -o /app/out
 
-# Copy the built frontend static assets
-# COPY Web/build /app/out/wwwroot
 
 # Create EF migrations bundle (self-contained)
-ENV ConnectionStrings__DefaultConnection=Host=localhost;Database=reezer;Username=root;Password=root
+ENV ConnectionStrings__DefaultConnection=Host=localhost;Database=financer;Username=root;Password=root
 RUN dotnet ef migrations bundle --project Api \
     -r linux-musl-x64 \
     --configuration Release \
@@ -49,6 +47,9 @@ RUN adduser -D -s /bin/sh appuser
 # Copy published application
 COPY --from=build-env /app/out ./
 COPY +devops/docker/docker-entrypoint.sh ./
+
+# Copy the built frontend static assets
+COPY Web/build /app/out/wwwroot
 
 # Make scripts executable
 RUN chmod +x ./docker-entrypoint.sh ./efbundle
